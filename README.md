@@ -1,6 +1,7 @@
 # PEFT: Qwen2.5-0.5B GSM8K Finetune (SFT / LoRA / Prompt)
 
 本项目用于对比 Qwen2.5-0.5B 在 GSM8K 上的不同 PEFT 微调方式（目前不包含 prefix 方式的对比）。
+项目使用了 SwanLab 进行实验记录与可视化。
 
 ## 环境
 - Python 3.10
