@@ -1,0 +1,27 @@
+output_dir: "out/lora_math"
+run_name: "lora-math"
+report_to: "swanlab"
+
+lora_r: 8
+lora_alpha: 32
+lora_dropout: 0.1
+target_modules:
+  - "q_proj"
+  - "v_proj"
+
+max_length: 1024
+num_train_epochs: 5
+learning_rate: 5e-5
+per_device_train_batch_size: 4
+per_device_eval_batch_size: 4
+gradient_accumulation_steps: 1
+
+logging_steps: 10
+eval_strategy: "steps"
+eval_steps: 500
+
+save_strategy: "epoch"
+remove_unused_columns: false
+bf16: true
+fp16: false
+dataset_text_field: "text"

@@ -1,0 +1,17 @@
+pyyaml
+torch
+transformers
+peft
+trl
+datasets
+accelerate
+evaluate
+tokenizers
+modelscope
+tqdm
+numpy
+swanlab
+safetensors
+pyarrow
+python-dotenv
+sentencepiece
