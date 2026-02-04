@@ -3,6 +3,7 @@
 !eval_gsm8k.py
 !data_gsm8k.py
 !infer_basic.py
+!process_logger.py
 !configs/
 !configs/**
 !train_lora_sft.py
