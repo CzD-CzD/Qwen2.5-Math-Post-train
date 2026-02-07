@@ -6,9 +6,10 @@
 !process_logger.py
 !configs/
 !configs/**
+configs/prefix_sft.yaml
+configs/infer_bon.yaml
 !train_lora_sft.py
 !train_full_sft.py
-!train_prefix_sft.py
 !train_prompt_sft.py
 !run_experiments.py
 !requirements.txt

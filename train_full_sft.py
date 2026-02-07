@@ -5,7 +5,7 @@ import os
 from typing import Optional, Dict, Any
 import yaml
 from transformers import AutoModelForCausalLM, AutoTokenizer
-from trl import SFTTrainer, SFTConfig, DataCollatorForCompletionOnlyLM
+from trl import SFTTrainer, SFTConfig
 from datasets import DatasetDict
 from dotenv import load_dotenv
 import swanlab
@@ -33,11 +33,6 @@ def train_sft(
     })
 
     response_template = "Solution:\n" 
-
-    collator = DataCollatorForCompletionOnlyLM(
-        response_template=response_template,
-        tokenizer=tokenizer,
-    )
 
     args = SFTConfig(
         output_dir=sft_cfg["output_dir"],
@@ -71,7 +66,6 @@ def train_sft(
         args=args,
         train_dataset=train_ds,
         eval_dataset=val_ds,
-        data_collator=collator,
         callbacks=[LocalJSONLLogger(sft_cfg["run_name"])],
     )
 

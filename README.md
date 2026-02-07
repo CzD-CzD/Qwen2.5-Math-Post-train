@@ -1,12 +1,7 @@
 # PEFT: Qwen2.5-0.5B GSM8K Finetune (SFT / LoRA / Prompt)
 
-本项目用于对比 Qwen2.5-0.5B 在 GSM8K 上的不同 PEFT 微调方式（目前不包含 prefix 方式的对比）。
+本项目用于对比 Qwen2.5-0.5B/Qwen2.5-Math-1.5B 在 GSM8K 上的不同 PEFT 微调方式。
 项目使用了 SwanLab 进行实验记录与可视化。
-
-## 环境
-- Python 3.10
-- PyTorch 2.5.1+cu121
-- CUDA 12.1
 
 ## 目录说明
 - `run_experiments.py`: 统一入口，按模式启动训练/推理
@@ -38,11 +33,14 @@ python eval_gsm8k.py infer_outputs/lora_infer.jsonl
 python eval_gsm8k.py infer_outputs/prompt_infer.jsonl
 ```
 
-## 当前结果（GSM8K）
+## Results（GSM8K, Qwen2.5-0.5B）
 - base: total=1318 correct=398 acc=0.3020
 - sft: total=1319 correct=478 acc=0.3624
 - lora: total=1319 correct=468 acc=0.3548
-- prompt: total=1318 correct=405 acc=0.3073
+- prompt: total=1319 correct=405 acc=0.3071
 
-## 说明
-- 当前暂未做 prefix 对比。
+
+## Results (GSM8K, Qwen2.5-Math-1.5B)
+- base: total=1319 correct=835 acc=0.6331 (format_acc=0.7043)
+- sft: total=1319 correct=935 acc=0.7089 (format_acc=0.9901)
+- lora: total=1319 correct=886 acc=0.6717 (format_acc=0.9909)

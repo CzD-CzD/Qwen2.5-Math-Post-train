@@ -6,6 +6,9 @@ import torch
 import yaml
 import os
 
+from transformers import StoppingCriteria, StoppingCriteriaList
+
+
 
 def load_infer_yaml(path: str) -> Dict[str, Any]:
     with open(path, "r", encoding="utf-8") as f:
@@ -16,16 +19,22 @@ def _chunked(it: List[dict], n: int):
     for i in range(0, len(it), n):
         yield it[i:i + n]
 
-def wrap_chat(tokenizer, p):
-    messages = [
-        {"role": "system", "content": "You are a math assistant who solves problems step by step."},
-        {"role": "user", "content": p},
-    ]
-    return tokenizer.apply_chat_template(
-        messages,
-        tokenize=False,
-        add_generation_prompt=True,
-    )
+'''
+class StopOnAnswer(StoppingCriteria):
+    def __init__(self, tokenizer):
+        self.tokenizer = tokenizer
+        self.stop_ids = tokenizer.encode("</answer>", add_special_tokens=False)
+
+    def __call__(self, input_ids, scores, **kwargs):
+        n = len(self.stop_ids)
+        if input_ids.shape[1] < n:
+            return False
+
+        for i in range(input_ids.shape[0]):
+            if input_ids[i, -n:].tolist() != self.stop_ids:
+                return False
+        return True
+'''
 
 
 def infer_basic(
@@ -47,6 +56,8 @@ def infer_basic(
     # temperature = float(cfg.get("temperature", 0.7))
     # top_p = float(cfg.get("top_p", 0.9))
     do_sample = bool(cfg.get("do_sample", False))
+    #stopping = StoppingCriteriaList([StopOnAnswer(tokenizer)])
+
 
     torch.manual_seed(seed)
     if torch.cuda.is_available():
@@ -60,10 +71,7 @@ def infer_basic(
     data_list = list(dataset)
     with open(output_path, "w", encoding="utf-8") as f:
         for batch in _chunked(data_list, batch_size):
-            # prompts = [wrap_chat(tokenizer, ex["prompt"]) for ex in batch]
             prompts = [ex["prompt"] for ex in batch]
-
-
 
             inputs = tokenizer(
                 prompts,
@@ -77,6 +85,7 @@ def infer_basic(
             with torch.no_grad():
                 outputs = model.generate(
                     **inputs,
+                    #stopping_criteria=stopping,
                     max_new_tokens=max_new_tokens,
                     do_sample=do_sample,
                     #no_repeat_ngram_size=3,
