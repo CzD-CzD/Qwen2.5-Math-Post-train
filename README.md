@@ -1,4 +1,4 @@
-# PEFT: Qwen2.5-0.5B GSM8K Finetune (SFT / LoRA / Prompt)
+# Qwen2.5 Math Finetune (SFT / LoRA / Prompt)
 
 本项目用于对比 Qwen2.5-0.5B/Qwen2.5-Math-1.5B 在 GSM8K 上的不同 PEFT 微调方式。
 项目使用了 SwanLab 进行实验记录与可视化。
@@ -43,4 +43,7 @@ python eval_gsm8k.py infer_outputs/prompt_infer.jsonl
 ## Results (GSM8K, Qwen2.5-Math-1.5B)
 - base: total=1319 correct=835 acc=0.6331 (format_acc=0.7043)
 - sft: total=1319 correct=935 acc=0.7089 (format_acc=0.9901)
-- lora: total=1319 correct=886 acc=0.6717 (format_acc=0.9909)
+- lora(r=8, q+v): total=1319 correct=886 acc=0.6717 (format_acc=0.9909)
+- lora(r=16, q+v): total=1319 correct=893 acc=0.6770 (format_acc=0.9962)
+- lora(r=16, q+v+k): total=1319 correct=897 acc=0.6801 (format_acc=0.9886)
+- lora(r=16, q+v+k+o): total=1319 correct=914 acc=0.6929 (format_acc=0.9864)
