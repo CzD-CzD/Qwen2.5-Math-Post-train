@@ -15,4 +15,3 @@ save_strategy: "epoch"
 remove_unused_columns: false
 bf16: true
 fp16: false
-dataset_text_field: "text"

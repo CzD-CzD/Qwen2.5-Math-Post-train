@@ -58,7 +58,7 @@ def train_prompt_tuning(
 
         bf16=bool(prompt_cfg.get("bf16", False)),
         fp16=bool(prompt_cfg.get("fp16", False)),
-        dataset_text_field=prompt_cfg.get("dataset_text_field", "text"),
+        completion_only_loss=True,
 
         remove_unused_columns=bool(prompt_cfg["remove_unused_columns"]),
     )

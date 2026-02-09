@@ -61,7 +61,7 @@ def train_lora(
 
         bf16=bool(lora_cfg.get("bf16", False)),
         fp16=bool(lora_cfg.get("fp16", False)),
-        dataset_text_field=lora_cfg.get("dataset_text_field", "text"),
+        completion_only_loss=True,
 
         remove_unused_columns=bool(lora_cfg["remove_unused_columns"]),
     )

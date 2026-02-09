@@ -55,7 +55,7 @@ def train_sft(
 
         bf16=bool(sft_cfg.get("bf16", False)),
         fp16=bool(sft_cfg.get("fp16", False)),
-        dataset_text_field=sft_cfg.get("dataset_text_field", "text"),
+        completion_only_loss=True,
 
         remove_unused_columns=bool(sft_cfg["remove_unused_columns"]),
     )
