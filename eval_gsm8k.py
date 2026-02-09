@@ -1,28 +1,70 @@
 import json, re, sys
+from sympy import simplify
+from sympy.parsing.latex import parse_latex
+from sympy.parsing.sympy_parser import parse_expr
 
-def extract_num(text: str):
+
+def extract_answer(text: str):
     if text is None:
         return None
 
-    m = re.search(r"</think>\s*<answer>\s*([^<\n]+)\s*</answer>", text, flags=re.IGNORECASE)
-    if m:
-        s = m.group(1).strip().replace(",", "")
-        nums = re.findall(r"-?\d+(?:\.\d+)?", s)
-        if nums:
-          return nums[-1]
+    matches = re.findall(
+        r"</think>\s*<answer>\s*([^<\n]+)\s*</answer>",
+        text,
+        flags=re.IGNORECASE,
+    )
+    if matches:
+        return matches[-1].strip()
 
     m = re.search(r"####\s*([^\n]+)", text)
     if m:
-        s = m.group(1).strip().replace(",", "")
-        nums = re.findall(r"-?\d+(?:\.\d+)?", s)
-        if nums:
-          return nums[-1]
+        return m.group(1).strip()
 
-    nums = re.findall(r"-?\d+(?:\.\d+)?", text.replace(",", ""))
+    return text.strip()
+
+
+def extract_number(text: str):
+    if text is None:
+        return None
+    s = text.replace(",", "")
+    nums = re.findall(r"-?\d+(?:\.\d+)?", s)
     return nums[-1] if nums else None
 
+def normalize_expr(s: str):
+    s = s.replace(",", "").strip()
 
+    s = re.sub(r"^\$+", "", s)
+    try:
+        return parse_latex(s)
+    except Exception:
+        pass
+    try:
+        return parse_expr(s)
+    except Exception:
+        pass
+    return s
 
+def is_equal(pred: str, gold: str) -> bool:
+    if pred is None or gold is None:
+        return False
+
+    pred = pred.strip()
+    gold = gold.strip()
+
+    if pred == gold:
+        return True
+
+    pred_num = extract_number(pred)
+    gold_num = extract_number(gold)
+    if pred_num is not None and gold_num is not None and pred_num == gold_num:
+        return True
+
+    try:
+        p = normalize_expr(pred)
+        g = normalize_expr(gold)
+        return simplify(p - g) == 0
+    except Exception:
+        return False
 
 
 def eval_file(path: str):
@@ -34,10 +76,10 @@ def eval_file(path: str):
             continue
         obj = json.loads(line)
         pred_text = obj.get("prediction", "")
-        pred = extract_num(obj.get("prediction", ""))
-        gold = extract_num(obj.get("gold", ""))
+        pred = extract_answer(pred_text)
+        gold = extract_answer(obj.get("gold", ""))
         total += 1
-        if pred is not None and pred == gold:
+        if is_equal(pred, gold):
             correct += 1
         if re.search(r"</think>\s*<answer>\s*[^<\n]+\s*</answer>", pred_text, flags=re.IGNORECASE):
             format_ok += 1
