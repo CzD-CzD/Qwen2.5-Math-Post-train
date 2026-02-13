@@ -11,6 +11,7 @@ from data_math import get_math_ds
 from train_full_sft import train_sft
 from train_lora_sft import train_lora
 from train_prompt_sft import train_prompt_tuning
+from train_grpo import train_grpo
 
 from infer_basic import infer_basic
 #from infer_bon import infer_bon
@@ -29,10 +30,11 @@ def parse_args():
     p = argparse.ArgumentParser()
     p.add_argument("--task", choices=["train", "infer"], required=True)
     p.add_argument("--infer-mode", choices=["basic", "bon", "vote"], help="infer mode")
-    p.add_argument("--mode", choices=["sft", "lora", "prompt"], required=True)
+    p.add_argument("--mode", choices=["sft", "lora", "prompt", "grpo"], required=True)
     p.add_argument("--model", choices=MODELS.keys(), required=True)
     p.add_argument("--model-path", default=None, help="Local model path (overrides --model)")
     p.add_argument("--dataset", choices=DATASETS.keys(), required=True)
+    #p.add_argument("--use-diet", action="store_true")
     return p.parse_args()
 
 
@@ -45,25 +47,33 @@ def main():
 
     if args.task == "train":
 
-        model_dir = snapshot_download(model_id=MODELS[args.model])
-        model = AutoModelForCausalLM.from_pretrained(
-            model_dir,
+        base_model_dir = snapshot_download(model_id=MODELS[args.model])
+        base_model = AutoModelForCausalLM.from_pretrained(
+            base_model_dir,
             trust_remote_code=True,
             dtype="auto",
             device_map="auto",
             attn_implementation="eager",
         )
-        tokenizer = AutoTokenizer.from_pretrained(
-            model_dir,
-            trust_remote_code=True,
-        )
 
         if args.mode == "sft":
-            train_sft(model, tokenizer, train_ds, val_ds)
+            tokenizer = AutoTokenizer.from_pretrained(base_model_dir, trust_remote_code=True)
+            train_sft(base_model, tokenizer, train_ds, val_ds)
         elif args.mode == "lora":
-            train_lora(model, tokenizer, train_ds, val_ds)
+            tokenizer = AutoTokenizer.from_pretrained(base_model_dir, trust_remote_code=True)
+            train_lora(base_model, tokenizer, train_ds, val_ds)
         elif args.mode == "prompt":
-            train_prompt_tuning(model, tokenizer, train_ds, val_ds)
+            tokenizer = AutoTokenizer.from_pretrained(base_model_dir, trust_remote_code=True)
+            train_prompt_tuning(base_model, tokenizer, train_ds, val_ds)
+
+        # only support peft + grpo, please change the code below when use sft
+        elif args.mode == "grpo":
+            if args.model_path:
+                model = PeftModel.from_pretrained(base_model, args.model_path, is_trainable=True)
+                tokenizer = AutoTokenizer.from_pretrained(base_model_dir, trust_remote_code=True)
+                train_grpo(model, tokenizer, train_ds, val_ds)
+            else:
+                raise ValueError("GRPO requires a local model path (--model-path)")
         else:
             raise ValueError(f"train task does not support mode={args.mode}")
         
@@ -74,7 +84,7 @@ def main():
             trust_remote_code=True,
             dtype="auto",
             device_map="auto",
-            attn_implementation="eager" if args.mode in ["prefix", "prompt"] else None,
+            attn_implementation="eager" if args.mode == "prompt" else None,
         )
     
         if args.model_path:

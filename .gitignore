@@ -11,9 +11,11 @@ configs/infer_bon.yaml
 !train_lora_sft.py
 !train_full_sft.py
 !train_prompt_sft.py
+!train_grpo.py
 !run_experiments.py
 !requirements.txt
 !README.md
 !run_all.sh
+!reward_math.py
 !dataset/
 !dataset/**

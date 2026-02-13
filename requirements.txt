@@ -15,3 +15,7 @@ safetensors
 pyarrow
 python-dotenv
 sentencepiece
+sympy
+latex2sympy2_extended
+math_verify
+pylatexenc

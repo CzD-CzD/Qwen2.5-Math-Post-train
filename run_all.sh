@@ -28,13 +28,13 @@ mkdir -p "${LOG_DIR}"
 #  > "${LOG_DIR}/sft_infer.log" 2>&1
 
 # 2) LoRA
-${PY} run_experiments.py --task train --mode lora --model ${MODEL} --dataset ${DATASET} \
-  > "${LOG_DIR}/lora.log" 2>&1
+#${PY} run_experiments.py --task train --mode lora --model ${MODEL} --dataset ${DATASET} \
+#  > "${LOG_DIR}/lora.log" 2>&1
 # infer (LoRA adapter path)
-INFER_OUTPUT_NAME="lora_infer.jsonl" ${PY} run_experiments.py --task infer --mode lora --infer-mode basic --model ${MODEL} --dataset ${DATASET} \
-  --model-path ./out/lora_math \
-  > "${LOG_DIR}/lora_infer_basic.log" 2>&1
-  
+#INFER_OUTPUT_NAME="lora_infer.jsonl" ${PY} run_experiments.py --task infer --mode lora --infer-mode basic --model ${MODEL} --dataset ${DATASET} \
+#  --model-path ./out/lora_math \
+#  > "${LOG_DIR}/lora_infer_basic.log" 2>&1
+
 #INFER_OUTPUT_NAME="lora_infer_bon.jsonl" ${PY} run_experiments.py --task infer --mode lora --infer-mode bon --model ${MODEL} --dataset ${DATASET} \
 #  --model-path ./out/lora_math \
 #  > "${LOG_DIR}/lora_infer.log" 2>&1
@@ -46,3 +46,12 @@ INFER_OUTPUT_NAME="lora_infer.jsonl" ${PY} run_experiments.py --task infer --mod
 #INFER_OUTPUT_NAME="prompt_infer.jsonl" ${PY} run_experiments.py --task infer --mode prompt --infer-mode basic --model ${MODEL} --dataset ${DATASET} \
 #  --model-path ./out/prompt_math \
 #  > "${LOG_DIR}/prompt_infer.log" 2>&1
+
+# 4) GRPO (LoRA)
+${PY} run_experiments.py --task train --mode grpo --model ${MODEL} --dataset ${DATASET} \
+  --model-path ./out/lora_math \
+  > "${LOG_DIR}/grpo.log" 2>&1
+# infer (GRPO adapter path)
+INFER_OUTPUT_NAME="grpo_infer_basic.jsonl" ${PY} run_experiments.py --task infer --mode lora --infer-mode basic --model ${MODEL} --dataset ${DATASET} \
+  --model-path ./out/grpo_math \
+  > "${LOG_DIR}/grpo_infer_basic.log" 2>&1

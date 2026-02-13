@@ -20,9 +20,11 @@ pip install -r requirements.txt
 
 运行实验（示例）：
 ```bash
-python run_experiments.py --mode sft --model 0.5B --dataset gsm8k
-python run_experiments.py --mode lora --model 0.5B --dataset gsm8k
-python run_experiments.py --mode prompt --model 0.5B --dataset gsm8k
+python run_experiments.py --task train --mode sft --model 1.5B --dataset gsm8k
+python run_experiments.py --task train --mode lora --model 1.5B --dataset gsm8k
+python run_experiments.py --task train --mode prompt --model 1.5B --dataset gsm8k
+python run_experiments.py --task train --mode grpo --model 1.5B --dataset gsm8k --model-path ./out/lora_math
+python run_experiments.py --task infer --mode lora --infer-mode basic --model 1.5B --dataset gsm8k --model-path ./out/grpo_math
 ```
 
 评测：
@@ -42,8 +44,12 @@ python eval_gsm8k.py infer_outputs/prompt_infer.jsonl
 
 ## Results (GSM8K, Qwen2.5-Math-1.5B)
 - base: total=1319 correct=835 acc=0.6331 (format_acc=0.7043)
-- sft: total=1319 correct=935 acc=0.7089 (format_acc=0.9901)
-- lora(r=8, q+v): total=1319 correct=886 acc=0.6717 (format_acc=0.9909)
-- lora(r=16, q+v): total=1319 correct=893 acc=0.6770 (format_acc=0.9962)
-- lora(r=16, q+v+k): total=1319 correct=897 acc=0.6801 (format_acc=0.9886)
-- lora(r=16, q+v+k+o): total=1319 correct=914 acc=0.6929 (format_acc=0.9864)
+- sft: total=1319 correct=939 acc=0.7119 (format_acc=0.9901)
+- lora(r=16, q+v, alpha=32): total=1319 correct=887 acc=0.6725 (format_acc=0.9939)
+- lora(r=16, q+v+k, alpha=32): total=1319 correct=912 acc=0.6914 (format_acc=0.9901)
+- lora(r=16, q+v+k+o, alpha=32): total=1319 correct=905 acc=0.6861 (format_acc=0.9886)
+- lora(r=16, q+v+k, alpha=64): total=1319 correct=899 acc=0.6816 (format_acc=0.9871)
+- lora(r=8, q+v+k, alpha=32): total=1319 correct=892 acc=0.6763 (format_acc=0.9886)
+- grpo(lora best, kl_coef=0.0): total=1319 correct=996 acc=0.7551 (format_acc=0.9962)
+
+
