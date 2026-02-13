@@ -1,46 +1,49 @@
-# Qwen2.5 Math Finetune (SFT / LoRA / Prompt)
+# Qwen2.5 Math Post-train (SFT / LoRA / Prompt / GRPO)
 
-本项目用于对比 Qwen2.5-0.5B/Qwen2.5-Math-1.5B 在 GSM8K 上的不同 PEFT 微调方式。
-项目使用了 SwanLab 进行实验记录与可视化。
+This repo runs PEFT finetuning and GRPO alignment for Qwen2.5.
+Primary entrypoint is `run_experiments.py`.
 
-## 目录说明
-- `run_experiments.py`: 统一入口，按模式启动训练/推理
-- `run_all.sh`: 批量运行脚本
-- `train_lora_sft.py` / `train_prompt_sft.py` / `train_prefix_sft.py`: 不同训练方式
-- `eval_gsm8k.py`: 评测 GSM8K 结果
-- `data_gsm8k.py`: 数据处理
-- `dataset/`: 数据目录（请放置 GSM8K 数据）
-- `infer_outputs/`: 推理输出（jsonl）
+## Layout
+- `run_experiments.py`: unified entry for train/infer
+- `run_all.sh`: batch script
+- `train_full_sft.py` / `train_lora_sft.py` / `train_prompt_sft.py`: SFT trainers
+- `train_grpo.py`: GRPO trainer (LoRA adapter required)
+- `reward_math.py`: reward/grader utilities
+- `eval_gsm8k.py`: GSM8K eval
+- `data_gsm8k.py` / `data_math.py`: dataset processing
+- `configs/`: yaml configs
+- `dataset/`: dataset utilities
 
-## 快速开始
-安装依赖：
+## Install
 ```bash
 pip install -r requirements.txt
 ```
 
-运行实验（示例）：
+## Training
 ```bash
 python run_experiments.py --task train --mode sft --model 1.5B --dataset gsm8k
 python run_experiments.py --task train --mode lora --model 1.5B --dataset gsm8k
 python run_experiments.py --task train --mode prompt --model 1.5B --dataset gsm8k
-python run_experiments.py --task train --mode grpo --model 1.5B --dataset gsm8k --model-path ./out/lora_math
-python run_experiments.py --task infer --mode lora --infer-mode basic --model 1.5B --dataset gsm8k --model-path ./out/grpo_math
 ```
 
-评测：
+## GRPO (LoRA)
+GRPO expects a LoRA adapter and trains only LoRA parameters.
 ```bash
-python eval_gsm8k.py infer_outputs/base_infer.jsonl
+python run_experiments.py --task train --mode grpo --model 1.5B --dataset gsm8k --model-path ./out/lora_math
+```
+
+## Inference
+```bash
+python run_experiments.py --task infer --mode sft --infer-mode basic --model 1.5B --dataset gsm8k --model-path ./out/sft_math
+python run_experiments.py --task infer --mode lora --infer-mode basic --model 1.5B --dataset gsm8k --model-path ./out/lora_math
+```
+
+## Eval
+```bash
+python eval_gsm8k.py infer_outputs/base_infer_basic.jsonl
 python eval_gsm8k.py infer_outputs/sft_infer.jsonl
 python eval_gsm8k.py infer_outputs/lora_infer.jsonl
-python eval_gsm8k.py infer_outputs/prompt_infer.jsonl
 ```
-
-## Results（GSM8K, Qwen2.5-0.5B）
-- base: total=1318 correct=398 acc=0.3020
-- sft: total=1319 correct=478 acc=0.3624
-- lora: total=1319 correct=468 acc=0.3548
-- prompt: total=1319 correct=405 acc=0.3071
-
 
 ## Results (GSM8K, Qwen2.5-Math-1.5B)
 - base: total=1319 correct=835 acc=0.6331 (format_acc=0.7043)
@@ -51,5 +54,3 @@ python eval_gsm8k.py infer_outputs/prompt_infer.jsonl
 - lora(r=16, q+v+k, alpha=64): total=1319 correct=899 acc=0.6816 (format_acc=0.9871)
 - lora(r=8, q+v+k, alpha=32): total=1319 correct=892 acc=0.6763 (format_acc=0.9886)
 - grpo(lora best, kl_coef=0.0): total=1319 correct=996 acc=0.7551 (format_acc=0.9962)
-
-
