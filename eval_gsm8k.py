@@ -15,11 +15,6 @@ def extract_answer(text: str):
     )
     if matches:
         return matches[-1].strip()
-
-    m = re.search(r"####\s*([^\n]+)", text)
-    if m:
-        return m.group(1).strip()
-
     return text.strip()
 
 
