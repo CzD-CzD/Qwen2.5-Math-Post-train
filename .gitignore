@@ -17,5 +17,12 @@ configs/infer_bon.yaml
 !README.md
 !run_all.sh
 !reward_math.py
+debug_reward.py
+debug_reward_file.py
 !dataset/
 !dataset/**
+dataset/DeepScaleR/*
+dataset/gsm8k/*
+dataset/math/*
+dataset/*
+!dataset/README.md
