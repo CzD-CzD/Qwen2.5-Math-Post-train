@@ -17,4 +17,5 @@ configs/infer_bon.yaml
 !README.md
 !run_all.sh
 !reward_math.py
+!results_plot.png
 !dataset/README.md

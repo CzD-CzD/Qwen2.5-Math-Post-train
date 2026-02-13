@@ -54,3 +54,5 @@ python eval_gsm8k.py infer_outputs/lora_infer.jsonl
 - lora(r=16, q+v+k, alpha=64): total=1319 correct=899 acc=0.6816 (format_acc=0.9871)
 - lora(r=8, q+v+k, alpha=32): total=1319 correct=892 acc=0.6763 (format_acc=0.9886)
 - grpo(lora best, kl_coef=0.0): total=1319 correct=996 acc=0.7551 (format_acc=0.9962)
+
+![GSM8K accuracy comparison](results_plot.png)
