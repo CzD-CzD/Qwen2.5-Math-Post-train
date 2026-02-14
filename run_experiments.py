@@ -6,14 +6,14 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 from modelscope.hub.snapshot_download import snapshot_download
 from peft import PeftModel
 
-from data_gsm8k import get_gsm8k_ds
-from data_math import get_math_ds
-from train_full_sft import train_sft
-from train_lora_sft import train_lora
-from train_prompt_sft import train_prompt_tuning
-from train_grpo import train_grpo
+from data.data_gsm8k import get_gsm8k_ds
+from data.data_math import get_math_ds
+from sft.train_full_sft import train_sft
+from sft.train_lora_sft import train_lora
+from sft.train_prompt_sft import train_prompt_tuning
+from rl.train_grpo import train_grpo
 
-from infer_basic import infer_basic
+from inference.infer_basic import infer_basic
 #from infer_bon import infer_bon
 
 DATASETS = {
