@@ -1,5 +1,11 @@
 *
 !/.gitignore
+!data/
+!sft/
+!rl/
+!inference/
+!evaluation/
+!utils/
 !evaluation/eval_gsm8k.py
 !data/data_gsm8k.py
 !inference/infer_basic.py
@@ -25,4 +31,9 @@ configs/infer_bon.yaml
 !inference/__init__.py
 !evaluation/__init__.py
 !utils/__init__.py
-
+!data/__init__.py
+!sft/__init__.py
+!rl/__init__.py
+!inference/__init__.py
+!evaluation/__init__.py
+!utils/__init__.py
