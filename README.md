@@ -6,11 +6,11 @@ Primary entrypoint is `run_experiments.py`.
 ## Layout
 - `run_experiments.py`: unified entry for train/infer
 - `run_all.sh`: batch script
-- `train_full_sft.py` / `train_lora_sft.py` / `train_prompt_sft.py`: SFT trainers
-- `train_grpo.py`: GRPO trainer (LoRA adapter required)
-- `reward_math.py`: reward/grader utilities
-- `eval_gsm8k.py`: GSM8K eval
-- `data_gsm8k.py` / `data_math.py`: dataset processing
+- `sft/train_full_sft.py` / `sft/train_lora_sft.py` / `sft/train_prompt_sft.py`: SFT trainers
+- `rl/train_grpo.py`: GRPO trainer (LoRA adapter required)
+- `utils/reward_math.py`: reward/grader utilities
+- `evaluation/eval_gsm8k.py`: GSM8K eval
+- `data/data_gsm8k.py` / `data/data_math.py`: dataset processing
 - `configs/`: yaml configs
 - `dataset/`: dataset utilities
 
@@ -40,9 +40,9 @@ python run_experiments.py --task infer --mode lora --infer-mode basic --model 1.
 
 ## Eval
 ```bash
-python eval_gsm8k.py infer_outputs/base_infer_basic.jsonl
-python eval_gsm8k.py infer_outputs/sft_infer.jsonl
-python eval_gsm8k.py infer_outputs/lora_infer.jsonl
+python evaluation/eval_gsm8k.py infer_outputs/base_infer_basic.jsonl
+python evaluation/eval_gsm8k.py infer_outputs/sft_infer.jsonl
+python evaluation/eval_gsm8k.py infer_outputs/lora_infer.jsonl
 ```
 
 ## Results (GSM8K, Qwen2.5-Math-1.5B)
