@@ -6,10 +6,6 @@ import torch
 import yaml
 import os
 
-from transformers import StoppingCriteria, StoppingCriteriaList
-
-
-
 def load_infer_yaml(path: str) -> Dict[str, Any]:
     with open(path, "r", encoding="utf-8") as f:
         return yaml.safe_load(f)
@@ -18,23 +14,6 @@ def load_infer_yaml(path: str) -> Dict[str, Any]:
 def _chunked(it: List[dict], n: int):
     for i in range(0, len(it), n):
         yield it[i:i + n]
-
-'''
-class StopOnAnswer(StoppingCriteria):
-    def __init__(self, tokenizer):
-        self.tokenizer = tokenizer
-        self.stop_ids = tokenizer.encode("</answer>", add_special_tokens=False)
-
-    def __call__(self, input_ids, scores, **kwargs):
-        n = len(self.stop_ids)
-        if input_ids.shape[1] < n:
-            return False
-
-        for i in range(input_ids.shape[0]):
-            if input_ids[i, -n:].tolist() != self.stop_ids:
-                return False
-        return True
-'''
 
 
 def infer_basic(
@@ -108,6 +87,9 @@ def infer_basic(
                     #"prompt": ex.get("prompt"),
                     "prediction": pred,
                     "gold": ex.get("gold"),
+                    "prompt_tokens": int(input_lens[i]),
+                    "gen_tokens": int(gen_ids.numel()),
+                    "total_tokens": int(outputs[i].numel()),
                 }
                 f.write(json.dumps(record, ensure_ascii=False) + "\n")
 

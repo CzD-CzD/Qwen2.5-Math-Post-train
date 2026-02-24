@@ -13,7 +13,7 @@ from utils.reward_math import extract_answer_strict, extract_boxed_answer, grade
 def load_grpo_yaml(path: str) -> Dict[str, Any]:
     with open(path, "r", encoding="utf-8") as f:
         return yaml.safe_load(f)
-
+    
 
 def _to_text(x: Any) -> str:
     if isinstance(x, str):
@@ -117,7 +117,7 @@ def train_grpo(
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
     tokenizer.padding_side = "left"
-
+              
 
     trainer = GRPOTrainer(
         model=model,

@@ -4,7 +4,7 @@ import time
 from typing import Any, Dict
 import yaml
 from trl import SFTTrainer, SFTConfig
-from peft import LoraConfig, get_peft_model
+from peft import LoraConfig, PeftModel, get_peft_model
 from datasets import DatasetDict
 from utils.process_logger import log_event, LocalJSONLLogger
 
@@ -39,7 +39,8 @@ def train_lora(
         task_type="CAUSAL_LM",
     )
 
-    model = get_peft_model(model, peft_config)
+    if not isinstance(model, PeftModel):
+        model = get_peft_model(model, peft_config)
 
     args = SFTConfig(
         output_dir=lora_cfg["output_dir"],

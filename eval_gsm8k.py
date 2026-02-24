@@ -9,7 +9,7 @@ def extract_answer(text: str):
         return None
 
     matches = re.findall(
-        r"</think>\s*<answer>\s*([^<\n]+)\s*</answer>",
+        r"</think>\n<answer>\s*([^<\n]+)\s*</answer>",
         text,
         flags=re.IGNORECASE,
     )

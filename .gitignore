@@ -6,8 +6,11 @@
 !inference/
 !evaluation/
 !utils/
-!evaluation/eval_gsm8k.py
+!eval_gsm8k.py
+!eval_math.py
+!eval_token_stats.py
 !data/data_gsm8k.py
+!data/data_math.py
 !inference/infer_basic.py
 !utils/process_logger.py
 !configs/
@@ -35,5 +38,4 @@ configs/infer_bon.yaml
 !sft/__init__.py
 !rl/__init__.py
 !inference/__init__.py
-!evaluation/__init__.py
 !utils/__init__.py

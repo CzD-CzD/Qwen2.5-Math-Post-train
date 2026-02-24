@@ -8,6 +8,7 @@ from peft import PeftModel
 
 from data.data_gsm8k import get_gsm8k_ds
 from data.data_math import get_math_ds
+from data.data_deepscaler import get_deepscaler_ds
 from sft.train_full_sft import train_sft
 from sft.train_lora_sft import train_lora
 from sft.train_prompt_sft import train_prompt_tuning
@@ -37,6 +38,35 @@ def parse_args():
     #p.add_argument("--use-diet", action="store_true")
     return p.parse_args()
 
+def load_base(model_key: str, mode: str):
+    base_model_dir = snapshot_download(model_id=MODELS[model_key])
+    model = AutoModelForCausalLM.from_pretrained(
+        base_model_dir,
+        trust_remote_code=True,
+        dtype="auto",
+        device_map="auto",
+        attn_implementation="eager" if mode == "prompt" else None,
+    )
+    tokenizer = AutoTokenizer.from_pretrained(base_model_dir, trust_remote_code=True)
+    return model, tokenizer, base_model_dir
+
+def load_adapter(base_model, base_model_dir: str, mode: str, model_path: str | None):
+    if not model_path:
+        return base_model, AutoTokenizer.from_pretrained(base_model_dir, trust_remote_code=True)
+    if mode in ["lora", "prompt", "grpo"]:
+        model = PeftModel.from_pretrained(base_model, model_path, is_trainable=(mode in ["lora", "grpo"]))
+        tokenizer = AutoTokenizer.from_pretrained(base_model_dir, trust_remote_code=True)
+        return model, tokenizer
+    if mode == "sft":
+        model = AutoModelForCausalLM.from_pretrained(
+            model_path,
+            trust_remote_code=True,
+            dtype="auto",
+            device_map="auto",
+        )
+        tokenizer = AutoTokenizer.from_pretrained(model_path, trust_remote_code=True)
+        return model, tokenizer
+    raise ValueError(f"unsupported mode for model_path: {mode}")
 
 def main():
     args = parse_args()
@@ -47,63 +77,29 @@ def main():
 
     if args.task == "train":
 
-        base_model_dir = snapshot_download(model_id=MODELS[args.model])
-        base_model = AutoModelForCausalLM.from_pretrained(
-            base_model_dir,
-            trust_remote_code=True,
-            dtype="auto",
-            device_map="auto",
-            attn_implementation="eager",
-        )
+        base_model, tokenizer, base_model_dir = load_base(args.model, args.mode)
 
         if args.mode == "sft":
-            tokenizer = AutoTokenizer.from_pretrained(base_model_dir, trust_remote_code=True)
             train_sft(base_model, tokenizer, train_ds, val_ds)
         elif args.mode == "lora":
-            tokenizer = AutoTokenizer.from_pretrained(base_model_dir, trust_remote_code=True)
-            train_lora(base_model, tokenizer, train_ds, val_ds)
+            model, tokenizer = load_adapter(base_model, base_model_dir, "lora", args.model_path)
+            train_lora(model, tokenizer, train_ds, val_ds)
         elif args.mode == "prompt":
-            tokenizer = AutoTokenizer.from_pretrained(base_model_dir, trust_remote_code=True)
-            train_prompt_tuning(base_model, tokenizer, train_ds, val_ds)
+            model, tokenizer = load_adapter(base_model, base_model_dir, "prompt", args.model_path)
+            train_prompt_tuning(model, tokenizer, train_ds, val_ds)
 
         # only support peft + grpo, please change the code below when use sft
         elif args.mode == "grpo":
-            if args.model_path:
-                model = PeftModel.from_pretrained(base_model, args.model_path, is_trainable=True)
-                tokenizer = AutoTokenizer.from_pretrained(base_model_dir, trust_remote_code=True)
-                train_grpo(model, tokenizer, train_ds, val_ds)
-            else:
+            if not args.model_path:
                 raise ValueError("GRPO requires a local model path (--model-path)")
+            model, tokenizer = load_adapter(base_model, base_model_dir, "grpo", args.model_path)
+            train_grpo(model, tokenizer, train_ds, val_ds)
         else:
             raise ValueError(f"train task does not support mode={args.mode}")
         
     elif args.task == "infer":
-        base_model_dir = snapshot_download(model_id=MODELS[args.model])
-        base_model = AutoModelForCausalLM.from_pretrained(
-            base_model_dir,
-            trust_remote_code=True,
-            dtype="auto",
-            device_map="auto",
-            attn_implementation="eager" if args.mode == "prompt" else None,
-        )
-    
-        if args.model_path:
-            if args.mode in ["lora", "prompt"]:
-                model = PeftModel.from_pretrained(base_model, args.model_path)
-                tokenizer = AutoTokenizer.from_pretrained(base_model_dir, trust_remote_code=True)
-            elif args.mode == "sft":
-                model = AutoModelForCausalLM.from_pretrained(
-                    args.model_path,
-                    trust_remote_code=True,
-                    dtype="auto",
-                    device_map="auto",
-                )
-                tokenizer = AutoTokenizer.from_pretrained(args.model_path, trust_remote_code=True)
-            else:
-                raise ValueError(f"infer task does not support mode={args.mode}")
-        else:
-            model = base_model
-            tokenizer = AutoTokenizer.from_pretrained(base_model_dir, trust_remote_code=True)
+        base_model, tokenizer, base_model_dir = load_base(args.model, args.mode)
+        model, tokenizer = load_adapter(base_model, base_model_dir, args.mode, args.model_path)
     
         if args.infer_mode == "basic":
             infer_basic(model, tokenizer, test_ds)

@@ -45,7 +45,7 @@ python evaluation/eval_gsm8k.py infer_outputs/sft_infer.jsonl
 python evaluation/eval_gsm8k.py infer_outputs/lora_infer.jsonl
 ```
 
-## Results (GSM8K, Qwen2.5-Math-1.5B)
+## Results (train dataset: GSM8K, test dataset: GSM8K, base model: Qwen2.5-Math-1.5B)
 - base: total=1319 correct=835 acc=0.6331 (format_acc=0.7043)
 - sft: total=1319 correct=939 acc=0.7119 (format_acc=0.9901)
 - lora(r=16, q+v, alpha=32): total=1319 correct=887 acc=0.6725 (format_acc=0.9939)
@@ -56,3 +56,12 @@ python evaluation/eval_gsm8k.py infer_outputs/lora_infer.jsonl
 - grpo(lora best, kl_coef=0.0): total=1319 correct=996 acc=0.7551 (format_acc=0.9962)
 
 ![GSM8K accuracy comparison](results_plot.png)
+
+## Results (train dataset: MATH/GSM8K, test dataset: MATH500, base model: Qwen2.5-Math-1.5B)
+- base: total=500 correct=146 acc=0.2920 (format_acc=0.6080, gen_tokens_mean=732.58)
+- sft(math): total=500 correct=212 acc=0.4240 (format_acc=0.8960, gen_tokens_mean=575.88)
+- lora(gsm8k): total=500 correct=203 acc=0.4060 (format_acc=0.9400, gen_tokens_mean=589.85)
+- lora(math): total=500 correct=224 acc=0.4480 (format_acc=0.9320, gen_tokens_mean=583.40)
+- lora(gsm8k)-grpo(math): total=500 correct=232 acc=0.4640 (format_acc=0.9200, gen_tokens_mean=610.55)
+- lora(math)-grpo(gsm8k 1.5k steps): total=500 correct=257 acc=0.5140 (format_acc=0.9460, gen_tokens_mean=620.85)
+- lora(math)-grpo(gsm8k 1.5k + math 2k steps): total=500 correct=279 acc=0.5580 (format_acc=0.9540, gen_tokens_mean=584.36)
