@@ -63,5 +63,8 @@ python evaluation/eval_gsm8k.py infer_outputs/lora_infer.jsonl
 - lora(gsm8k): total=500 correct=203 acc=0.4060 (format_acc=0.9400, gen_tokens_mean=589.85)
 - lora(math): total=500 correct=224 acc=0.4480 (format_acc=0.9320, gen_tokens_mean=583.40)
 - lora(gsm8k)-grpo(math): total=500 correct=232 acc=0.4640 (format_acc=0.9200, gen_tokens_mean=610.55)
+- lora(math)-grpo(math 2k steps): total=500 correct=241 acc=0.4820 (format_acc=0.9580, gen_tokens_mean=532.87)
 - lora(math)-grpo(gsm8k 1.5k steps): total=500 correct=257 acc=0.5140 (format_acc=0.9460, gen_tokens_mean=620.85)
 - lora(math)-grpo(gsm8k 1.5k + math 2k steps): total=500 correct=279 acc=0.5580 (format_acc=0.9540, gen_tokens_mean=584.36)
+
+![MATH500 SFT/LoRA grouped comparison](results_plot_math500_sft_lora.png)

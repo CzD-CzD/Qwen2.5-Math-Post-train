@@ -27,6 +27,7 @@ configs/infer_bon.yaml
 !run_all.sh
 !utils/reward_math.py
 !results_plot.png
+!results_plot_math500_sft_lora.png
 !dataset/README.md
 !data/__init__.py
 !sft/__init__.py
